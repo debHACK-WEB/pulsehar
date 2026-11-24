@@ -57,3 +57,9 @@ See the `rules/` directory for details on what each rule detects, why it matters
 ## Contributing & License
 
 Contributions are welcome via Issues and Pull Requests (see `CONTRIBUTING.md`). Licensed under `LICENSE`.
+---
+
+## Workflow Integration (Burp Suite & mitmproxy)
+
+- **Burp Suite:** Proxy HTTP traffic, export or save captured requests/responses as a `.har` file, and run `pulsehar analyze capture.har --scope target.com`.
+- **mitmproxy:** Capture traffic with `mitmproxy` / `mitmdump` or export HAR traffic, then feed the resulting `.har` file into `pulsehar analyze`.
