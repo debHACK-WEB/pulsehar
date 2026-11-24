@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pulsehar"
+version = "0.1.0"
+description = "Modular CLI tool for security analysis of HTTP Archive (HAR) files"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [
+  { name = "debHACK", email = "debHACK-WEB@github.com" }
+]
+dependencies = []
+
+[project.scripts]
+pulsehar = "cli:main"
+
+[tool.setuptools]
+py-modules = [
+  "cli",
+  "engine",
+  "models",
+  "normalizer",
+  "fingerprint",
+  "advisor",
+  "dataflow",
+  "recon_analyzer",
+  "inventory"
+]
+packages = ["parsers", "rules", "exporters", "capture"]
