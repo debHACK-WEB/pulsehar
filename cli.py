@@ -38,6 +38,18 @@ def build_parser() -> argparse.ArgumentParser:
     analyze_cmd.add_argument("har_file", type=Path, help="Path to the .har file")
     analyze_cmd.add_argument("--scope", type=str, default=None, help="Filter by target domain/host")
     analyze_cmd.add_argument("--json", action="store_true", help="Output results in JSON format")
+    analyze_cmd.add_argument(
+        "--severity",
+        type=str,
+        default=None,
+        help="Minimum severity to include (critical, high, medium, low, info)",
+    )
+    analyze_cmd.add_argument(
+        "--ignore",
+        type=str,
+        default="",
+        help="Comma-separated rule_ids to ignore (e.g., rule_a,rule_b)",
+    )
 
     endpoints_cmd = subparsers.add_parser("endpoints", help="List normalized endpoints from a HAR file")
     endpoints_cmd.add_argument("har_file", type=Path, help="Path to the .har file")
@@ -98,6 +110,17 @@ def main() -> None:
         exchanges = parse_har_file(args.har_file, scope_domain=args.scope)
         engine = AnalysisEngine(rules=_default_rules())
         findings = engine.run(exchanges)
+        ignored = {r.strip().lower() for r in (args.ignore or "").split(",") if r.strip()}
+        if ignored:
+            findings = [f for f in findings if (f.rule_id or "").lower() not in ignored]
+        if args.severity:
+            order = {"info": 0, "low": 1, "medium": 2, "high": 3, "critical": 4}
+            min_rank = order.get(args.severity.strip().lower())
+            if min_rank is not None:
+                findings = [
+                    f for f in findings
+                    if order.get((f.severity or "").lower(), -1) >= min_rank
+                ]
         
         if args.json:
             fp = build_executive_fingerprint(exchanges, findings, scope=args.scope)
